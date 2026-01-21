@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, sans-serif; }
+      .options-container { display: flex; flex-direction: column; gap: 6px; }
+      .option-btn {
+        background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+        padding: 13px 16px; font-size: 14px; cursor: pointer; text-align: left;
+      }
+      .option-btn:hover { background: #ecfdf5; border-color: #10b981; }
+    </style>
+  </head>
+  <body>
+    <div class="options-container">
+      <button class="option-btn" onclick="sendOption('产品咨询')">📦 产品咨询</button>
+      <button class="option-btn" onclick="sendOption('售后服务')">🔄 售后服务</button>
+      <button class="option-btn" onclick="sendOption('护肤建议')">🧖护肤建议</button>
+      <button class="option-btn" onclick="sendOption('防伪查询')">🔍 防伪查询</button>
+      <button class="option-btn" onclick="sendOption('公司品牌查询')">🏢 公司品牌查询</button>
+    </div>
+    <script>
+      function sendOption(text) {
+        window.parent.postMessage({ type: 'typebot-option', value: text }, '*');
+      }
+    </script>
+  </body>
+  </html>
