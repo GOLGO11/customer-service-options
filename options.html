@@ -1,48 +1,46 @@
 <!DOCTYPE html>
-  <html>
-  <head>
+<html>
+<head>
     <meta charset="UTF-8">
     <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font-family: -apple-system, sans-serif; }
-      .options-container { display: flex; flex-direction: column; gap: 6px; }
-      .option-btn {
-        background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
-        padding: 13px 16px; font-size: 14px; cursor: pointer; text-align: left;
-      }
-      .option-btn:hover { background: #ecfdf5; border-color: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: transparent; overflow: hidden; }
+        .options-container { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
+        .option-btn {
+            background: #fff; 
+            border: 1px solid #e5e7eb; 
+            border-radius: 12px;
+            padding: 13px 16px; 
+            font-size: 14px; 
+            cursor: pointer; 
+            text-align: left;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .option-btn:hover { background: #ecfdf5; border-color: #10b981; }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="options-container">
-      <button class="option-btn" onclick="sendOption('产品咨询', 'product')">📦 产品咨询</button>
-      <button class="option-btn" onclick="sendOption('售后服务', 'after_sale')">🔄 售后服务</button>
-      <button class="option-btn" onclick="sendOption('护肤建议', 'skincare')">🧖🏻‍♀️ 护肤建议</button>
-      <button class="option-btn" onclick="sendOption('防伪查询', 'verify')">🔍 防伪查询</button>
-      <button class="option-btn" onclick="sendOption('公司品牌查询', 'brand')">🏢 公司品牌查询</button>
+        <button class="option-btn" onclick="sendOption('产品咨询', 'product')">📦 产品咨询</button>
+        <button class="option-btn" onclick="sendOption('售后服务', 'after_sale')">🔄 售后服务</button>
+        <button class="option-btn" onclick="sendOption('护肤建议', 'skincare')">🧖🏻‍♀️ 护肤建议</button>
+        <button class="option-btn" onclick="sendOption('防伪查询', 'verify')">🔍 防伪查询</button>
+        <button class="option-btn" onclick="sendOption('公司品牌查询', 'brand')">🏢 公司品牌查询</button>
     </div>
 
     <script>
-      function sendOption(text, type) {
-    // 发送消息给父窗口
-    window.parent.postMessage({
-      type: 'typebotSendAnswer', // 修改为更有意义的标识
-      value: text,               // 传递按钮显示的文字
-      code: type                 // 传递后台判断用的逻辑代码
-    }, '*');
-  }
+        function sendOption(text, type) {
+            // 核心：必须确保 type 是 'typebot-option' 且字段名包含 'text'
+            // 这样才能被我们之前写的 Shadow DOM 监听脚本捕获
+            window.parent.postMessage({
+                type: 'typebot-option',
+                text: text,
+                param: type
+            }, '*');
+        }
     </script>
-
-    
-<script>
-
-  function sendOption(text, type) {
-      window.parent.postMessage({
-          type: 'typebot-option',
-          text: text,
-          param: type
-      }, '*');
-  }
-  </script>
-  </body>
-  </html>
+</body>
+</html>
