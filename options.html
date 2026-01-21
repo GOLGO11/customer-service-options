@@ -7,38 +7,30 @@
         body { font-family: -apple-system, sans-serif; background: transparent; overflow: hidden; }
         .options-container { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
         .option-btn {
-            background: #fff; 
-            border: 1px solid #e5e7eb; 
-            border-radius: 12px;
-            padding: 13px 16px; 
-            font-size: 14px; 
-            cursor: pointer; 
-            text-align: left;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            width: 100%;
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 13px 16px; font-size: 14px; cursor: pointer; text-align: left;
+            transition: all 0.2s; width: 100%;
         }
         .option-btn:hover { background: #ecfdf5; border-color: #10b981; }
     </style>
 </head>
 <body>
     <div class="options-container">
-        <button class="option-btn" onclick="sendOption('产品咨询', 'product')">📦 产品咨询</button>
-        <button class="option-btn" onclick="sendOption('售后服务', 'after_sale')">🔄 售后服务</button>
-        <button class="option-btn" onclick="sendOption('护肤建议', 'skincare')">🧖🏻‍♀️ 护肤建议</button>
-        <button class="option-btn" onclick="sendOption('防伪查询', 'verify')">🔍 防伪查询</button>
-        <button class="option-btn" onclick="sendOption('公司品牌查询', 'brand')">🏢 公司品牌查询</button>
+        <button type="button" class="option-btn" onclick="handleButtonClick('产品咨询', 'product')">📦 产品咨询</button>
+        <button type="button" class="option-btn" onclick="handleButtonClick('售后服务', 'after_sale')">🔄 售后服务</button>
+        <button type="button" class="option-btn" onclick="handleButtonClick('护肤建议', 'skincare')">🧖🏻‍♀️ 护肤建议</button>
+        <button type="button" class="option-btn" onclick="handleButtonClick('防伪查询', 'verify')">🔍 防伪查询</button>
+        <button type="button" class="option-btn" onclick="handleButtonClick('公司品牌查询', 'brand')">🏢 公司品牌查询</button>
     </div>
 
     <script>
-        function sendOption(text, type) {
-            // 核心：必须确保 type 是 'typebot-option' 且字段名包含 'text'
-            // 这样才能被我们之前写的 Shadow DOM 监听脚本捕获
+        function handleButtonClick(text, type) {
+            console.log('用户手动点击:', text);
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text,
-                param: type
+                param: type,
+                timestamp: Date.now() // 加入时间戳，确保每条消息是唯一的
             }, '*');
         }
     </script>
