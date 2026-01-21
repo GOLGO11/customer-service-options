@@ -3,34 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        /* 1. 样式重置与美化 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, sans-serif; background: transparent; overflow: hidden; }
-        .options-container { display: flex; flex-direction: column; gap: 8px; padding: 10px; }
-        .option-btn {
-            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
-            padding: 13px 16px; font-size: 14px; cursor: pointer; text-align: left;
-            transition: all 0.2s; width: 100%;
+        body { 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: transparent; 
+            overflow: hidden; 
         }
-        .option-btn:hover { background: #ecfdf5; border-color: #10b981; }
+        .options-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            padding: 10px; 
+        }
+        
+        /* 2. 按钮样式：匹配你的灰绿主题 */
+        .option-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            display: block;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 鼠标悬停效果 */
+        .option-btn:hover {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* 点击瞬间效果 */
+        .option-btn:active {
+            transform: translateY(0);
+            background: #d1fae5;
+        }
     </style>
 </head>
 <body>
     <div class="options-container">
-        <button type="button" class="option-btn" onclick="handleButtonClick('产品咨询', 'product')">📦 产品咨询</button>
-        <button type="button" class="option-btn" onclick="handleButtonClick('售后服务', 'after_sale')">🔄 售后服务</button>
-        <button type="button" class="option-btn" onclick="handleButtonClick('护肤建议', 'skincare')">🧖🏻‍♀️ 护肤建议</button>
-        <button type="button" class="option-btn" onclick="handleButtonClick('防伪查询', 'verify')">🔍 防伪查询</button>
-        <button type="button" class="option-btn" onclick="handleButtonClick('公司品牌查询', 'brand')">🏢 公司品牌查询</button>
+        <button type="button" class="option-btn" onclick="h('产品咨询')">📦 产品咨询</button>
+        <button type="button" class="option-btn" onclick="h('售后服务')">🔄 售后服务</button>
+        <button type="button" class="option-btn" onclick="h('护肤建议')">🧖🏻‍♀️ 护肤建议</button>
+        <button type="button" class="option-btn" onclick="h('防伪查询')">🔍 防伪查询</button>
+        <button type="button" class="option-btn" onclick="h('公司品牌查询')">🏢 公司品牌查询</button>
     </div>
 
     <script>
-        function handleButtonClick(text, type) {
-            console.log('用户手动点击:', text);
+        /**
+         * 向父窗口发送点击指令
+         * @param {string} text - 用于触发 Typebot 逻辑的关键词
+         */
+        function h(text) {
+            console.log('Sending message to Typebot:', text);
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text,
-                param: type,
-                timestamp: Date.now() // 加入时间戳，确保每条消息是唯一的
+                timestamp: Date.now() // 唯一标识，防止重复触发
             }, '*');
         }
     </script>
