@@ -31,5 +31,24 @@
         }, '*');
       }
     </script>
+  <script>
+  function testClick() {
+      console.log('Button clicked in iframe');
+      window.parent.postMessage({
+          type: 'typebot-option',
+          text: '产品咨询',
+          param: 'product'
+      }, '*');
+      alert('按钮已点击！消息已发送');
+  }
+
+  function sendOption(text, type) {
+      window.parent.postMessage({
+          type: 'typebot-option',
+          text: text,
+          param: type
+      }, '*');
+  }
+  </script>
   </body>
   </html>
