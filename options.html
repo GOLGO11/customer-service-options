@@ -24,12 +24,13 @@
 
     <script>
       function sendOption(text, type) {
-        window.parent.postMessage({
-          type: 'typebot-option',
-          text: text,
-          param: type
-        }, '*');
-      }
+    // 发送消息给父窗口
+    window.parent.postMessage({
+      type: 'typebotSendAnswer', // 修改为更有意义的标识
+      value: text,               // 传递按钮显示的文字
+      code: type                 // 传递后台判断用的逻辑代码
+    }, '*');
+  }
     </script>
 
     <button class="option-btn" onclick="testClick()">📦 产品咨询</button>
