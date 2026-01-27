@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 1. 样式重置与全局置顶设置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: transparent; 
+            overflow: hidden; /* 外部网页本身不滚动 */
+        }
+
+        /* 2. 置顶容器：关键修改点 */
+        .options-container { 
+            position: fixed; /* 核心修改：固定定位 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            padding: 12px 16px; 
+            background: #f0f9f4; /* 匹配截图中的淡绿色背景，确保遮盖下方文字 */
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08); /* 增加投影，产生浮起感 */
+            z-index: 9999;
+        }
+        
+        /* 3. 按钮样式：保持您的灰绿主题并增强点击感 */
+        .option-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 15px; /* 稍微加大字号，更易点击 */
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            display: block;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* 鼠标悬停/移动端触摸效果 */
+        .option-btn:hover {
+            background: #ecfdf5;
+            border-color: #10b981;
+            color: #059669;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 点击瞬间效果 */
+        .option-btn:active {
+            transform: scale(0.98); /* 增加物理按压反馈 */
+            background: #d1fae5;
+        }
+    </style>
+</head>
+<body>
+    <div class="options-container">
+        <button type="button" class="option-btn" onclick="h('澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
+        <button type="button" class="option-btn" onclick="h('澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
+    </div>
+
+    <script>
+        /**
+         * 向父窗口发送点击指令
+         * @param {string} text - 用于触发 Typebot 逻辑的关键词
+         */
+        function h(text) {
+            console.log('Sending message to Typebot:', text);
+            // 保持原有的 postMessage 逻辑，确保 Typebot 流程正常跳转
+            window.parent.postMessage({
+                type: 'typebot-option',
+                text: text,
+                timestamp: Date.now() 
+            }, '*');
+        }
+
+        // 自动告知父容器高度（可选，取决于您的 Embed 节点设置）
+        window.onload = function() {
+            const height = document.body.scrollHeight;
+            window.parent.postMessage({ type: 'resize', height: height }, '*');
+        };
+    </script>
+</body>
+</html>
