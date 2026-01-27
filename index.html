@@ -11,15 +11,17 @@
             -webkit-tap-highlight-color: transparent; 
         }
         body { 
-            background: #f0fdf4; /* 匹配背景色 */
+            background: #f0fdf4; 
             overflow: hidden;
             width: 100%;
+            height: 100%; /* 确保 body 撑满容器 */
         }
         .main-container {
             display: flex;
             flex-direction: column;
-            padding: 8px 16px; /* 紧凑布局 */
+            padding: 8px 16px;
             gap: 8px;
+            width: 100%;
         }
         .option-btn {
             background: #ffffff;
@@ -32,12 +34,12 @@
             cursor: pointer;
             text-align: left;
             width: 100%;
-            touch-action: manipulation; /* 优化移动端 */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            /* 关键：强制移动端立即响应触摸 */
+            touch-action: manipulation; 
+            -webkit-appearance: none;
         }
         .option-btn:active {
             background: #d1fae5;
-            transform: scale(0.98);
         }
     </style>
 </head>
@@ -48,10 +50,10 @@
     </div>
     <script>
         function h(text) {
+            // 发送消息
             window.parent.postMessage({
                 type: 'typebot-option',
-                text: text,
-                timestamp: Date.now()
+                text: text
             }, '*');
         }
     </script>
