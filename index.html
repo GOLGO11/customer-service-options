@@ -2,25 +2,60 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* 1. 基础重置 */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
         body { 
             font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background: #f0f9f4; /* 这里的背景色必须给，防止滑动时透明漏底 */
-            overflow: hidden; 
+            background: #f0fdf4; /* 匹配整体淡绿色背景 */
+            overflow: hidden;
+            width: 100%;
         }
+
+        /* 2. 容器布局 */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            padding: 12px 16px;
+            gap: 10px;
+        }
+
+        /* 3. 新增欢迎语样式 */
+        .welcome-text {
+            background: #ffffff;
+            border-radius: 15px 15px 15px 4px;
+            padding: 12px 16px;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #1e293b;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            margin-bottom: 5px;
+            /* 模拟 Typebot 气泡宽度 */
+            align-self: flex-start;
+            max-width: 90%;
+        }
+
+        /* 4. 按钮样式优化 */
         .options-container { 
             display: flex; 
             flex-direction: column; 
             gap: 8px; 
-            padding: 12px 16px; 
+            width: 100%;
         }
+        
         .option-btn {
             background: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
-            padding: 12px 16px;
+            padding: 14px 16px;
             font-size: 14px;
             font-weight: 500;
             color: #374151;
@@ -28,7 +63,10 @@
             text-align: left;
             transition: all 0.2s;
             width: 100%;
+            /* 确保移动端点击响应 */
+            touch-action: manipulation;
         }
+
         .option-btn:active {
             background: #d1fae5;
             transform: scale(0.98);
@@ -36,13 +74,27 @@
     </style>
 </head>
 <body>
-    <div class="options-container">
-        <button type="button" class="option-btn" onclick="h('澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
-        <button type="button" class="option-btn" onclick="h('澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
+    <div class="main-container">
+        <div class="welcome-text">
+            👋 你好！我是澳洲肤润康智能客服助手！<br>
+            请问您想咨询哪个产品？
+        </div>
+
+        <div class="options-container">
+            <button type="button" class="option-btn" onclick="h('杜鹃花酸脸霜')">杜鹃花酸脸霜</button>
+            <button type="button" class="option-btn" onclick="h('尿素护手霜')">尿素护手霜</button>
+        </div>
     </div>
+
     <script>
         function h(text) {
-            window.parent.postMessage({ type: 'typebot-option', text: text }, '*');
+            console.log('Button clicked:', text);
+            // 发送消息给父级 Typebot
+            window.parent.postMessage({
+                type: 'typebot-option',
+                text: text,
+                timestamp: Date.now()
+            }, '*');
         }
     </script>
 </body>
