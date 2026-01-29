@@ -59,8 +59,14 @@
         <button type="button" class="option-btn" onclick="h('澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
     <script>
-        function h(text) {
-            // 发送消息
+        function h(btn, text) {
+            // 1. 清除所有按钮的选中状态
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            
+            // 2. 为当前点击的按钮添加选中样式
+            btn.classList.add('selected');
+
+            // 3. 发送消息给 Typebot
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text
