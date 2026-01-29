@@ -38,8 +38,18 @@
             touch-action: manipulation; 
             -webkit-appearance: none;
         }
-        .option-btn:active {
-            background: #d1fae5;
+        /* 鼠标悬停（PC端） */
+        .option-btn:hover { border-color: #10b981; color: #047857; }
+
+        /* 点击瞬间的效果 */
+        .option-btn:active { transform: scale(0.98); }
+
+        /* 选中后的状态颜色（切换效果） */
+        .option-btn.selected {
+            background: #10b981 !important; /* 切换为主题绿 */
+            color: #ffffff !important;      /* 文字变白 */
+            border-color: #059669 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
     </style>
 </head>
