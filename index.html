@@ -4,25 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-        }
-        body { 
-            background: #f0fdf4; 
-            overflow: hidden;
-            width: 100%;
-            height: 100%; /* 确保 body 撑满容器 */
-        }
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            padding: 8px 16px;
-            gap: 8px;
-            width: 100%;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #f0fdf4; overflow: hidden; width: 100%; height: 100%; }
+        .main-container { display: flex; flex-direction: column; padding: 8px 16px; gap: 8px; width: 100%; }
+        
         .option-btn {
             background: #ffffff;
             border: 1px solid #e5e7eb;
@@ -34,10 +19,11 @@
             cursor: pointer;
             text-align: left;
             width: 100%;
-            /* 关键：强制移动端立即响应触摸 */
-            touch-action: manipulation; 
-            -webkit-appearance: none;
+            touch-action: manipulation; /* 解决移动端延迟 */
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
+
         /* 鼠标悬停（PC端） */
         .option-btn:hover { border-color: #10b981; color: #047857; }
 
@@ -55,8 +41,8 @@
 </head>
 <body>
     <div class="main-container">
-        <button type="button" class="option-btn" onclick="h('澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
-        <button type="button" class="option-btn" onclick="h('澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
+        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
+        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
     <script>
         function h(btn, text) {
