@@ -19,32 +19,42 @@
             cursor: pointer;
             text-align: left;
             width: 100%;
-            touch-action: manipulation;
+            touch-action: manipulation; /* 解决移动端延迟 */
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
+        /* 鼠标悬停（PC端） */
         .option-btn:hover { border-color: #10b981; color: #047857; }
+        /* 点击瞬间的效果 */
         .option-btn:active { transform: scale(0.98); }
+        /* 选中后的状态颜色（切换效果） */
         .option-btn.selected {
-            background: #10b981 !important;
-            color: #ffffff !important;
+            background: #10b981 !important; /* 切换为主题绿 */
+            color: #ffffff !important; /* 文字变白 */
             border-color: #059669 !important;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
+
+        /* 给 Typebot 容器基本样式，避免完全覆盖按钮（可调高度） */
+        typebot-standard {
+            width: 100%;
+            height: 70vh;          /* 或 calc(100% - 150px)，根据按钮高度调整 */
+            display: block;
+            margin-top: 10px;      /* 留点间距防重叠 */
+        }
     </style>
 
-    <!-- 加 Typebot SDK（type="module" 是必须的，新版是 ESM） -->
+    <!-- Typebot SDK 加载（放在 head 末尾或 body 开始都行） -->
     <script type="module">
       import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
 
-      // 初始化（因为你是自托管，必须带 apiHost）
+      // 初始化（自托管必须带 apiHost）
       Typebot.initStandard({
         typebot: "customer-service-2-5yx3lr2",
         apiHost: "https://fyncs.adamxjames.com",
-        // 可选：如果想在初始化后自动 reset remembered state（测试用）
-        // onInit: () => {
-        //   Typebot.reset();  // 每次都重置，临时验证注入是否正常
-        // }
+        // 可选：调试回调
+        // onInit: () => console.log('Typebot init OK'),
+        // onError: (err) => console.error('Typebot error:', err),
       });
     </script>
 </head>
@@ -54,22 +64,27 @@
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
 
+    <!-- 关键：加这个容器！Typebot 会把聊天界面注入这里 -->
+    <typebot-standard></typebot-standard>
+
     <script>
         function h(btn, text) {
-            // 清除选中状态
+            // 1. 清除所有按钮的选中状态
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+           
+            // 2. 为当前点击的按钮添加选中样式
             btn.classList.add('selected');
 
-            // 优先用官方 API 注入（更可靠，尤其 remember user + 重载后）
-            if (window.Typebot && typeof Typebot.setInputValue === 'function') {
-                Typebot.setInputValue(text);
-                Typebot.submitInput();
+            // 优先用官方 API（在 remember user + reload 后更可靠）
+            if (window.Typebot && typeof window.Typebot.setInputValue === 'function') {
+                window.Typebot.setInputValue(text);
+                window.Typebot.submitInput();
                 console.log('使用官方 API 注入：', text);
             } else {
-                console.warn('Typebot API 未就绪，fallback 到 postMessage');
+                console.warn('Typebot 未初始化，使用 fallback postMessage');
             }
 
-            // 保留你原有 postMessage（如果 Typebot 里有自定义接收逻辑）
+            // 3. 保留原有 postMessage（自定义逻辑 fallback）
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text
