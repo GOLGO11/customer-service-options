@@ -46,29 +46,31 @@
     </div>
     <script>
         function h(btn, text) {
-            // 1. 清除样式并选中
+            // 1. 清除所有按钮的选中状态
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        
-            // 2. 发送具体值给变量
-            window.parent.postMessage({
-                type: 'typebot-set-variable', // 强制先设置变量
-                variable: 'Last message received',     // 确保你在Typebot里有这个变量
-                value: text
-            }, '*');
-        
-            // 3. 核心：发送一个特定的 command 尝试“踢”一下状态机
-            window.parent.postMessage({
-                type: 'typebot-input-value', // 模拟用户输入该文本
-                value: text
-            }, '*');
             
-            // 4. 发送原有的 option 消息
+            // 2. 为当前点击的按钮添加选中样式
+            btn.classList.add('selected');
+
+            // 3. 发送消息给 Typebot
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text
             }, '*');
         }
+        // 在 Typebot 初始化之前或 onInit 回调里执行
+        const isNewSession = !localStorage.getItem('typebot@your-bot-id'); // 或其他特征 key
+        
+        Typebot.initStandard({
+          typebot: "customer-service-2-5yx3lr2",
+          // ...其他参数
+          onInit: () => {
+            if (isNewSession || /* 其他你想重置的条件 */) {
+              Typebot.reset();           // 重置 remembered state
+              // 可选：再 setPrefilledVariables 如果需要
+            }
+          }
+        });
     </script>
 </body>
 </html>
