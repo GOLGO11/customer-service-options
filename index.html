@@ -46,16 +46,27 @@
     </div>
     <script>
         function h(btn, text) {
-            // 1. 清除所有按钮的选中状态
+            // 1. 清除样式并选中
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            
-            // 2. 为当前点击的按钮添加选中样式
             btn.classList.add('selected');
-
-            // 3. 发送消息给 Typebot
+        
+            // 2. 发送命令给 Typebot，强制跳转到指定的 Block
             window.parent.postMessage({
-                type: 'typebot-option',
-                text: text
+                type: 'typebot-command',
+                command: {
+                    type: 'setVariable',
+                    variable: 'product_name',
+                    value: text
+                }
+            }, '*');
+        
+            // 3. 核心：强制跳转到你在 Typebot 中设定的 ID 为 "QuestionInput" 的 Block
+            window.parent.postMessage({
+                type: 'typebot-command',
+                command: {
+                    type: 'jumpToBlock',
+                    blockId: 'lsuvg4unmp4ausxhgzztyjbf' // 这里的 ID 需要你去 Typebot 节点里查
+                }
             }, '*');
         }
     </script>
