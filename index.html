@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>澳洲肤润康咨询</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body {
-            height: 100%;
-            width: 100%;
-            background: #f0fdf4;
-            overflow: hidden;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-        .page-wrapper {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .top-buttons {
-            padding: 12px 16px;
-            background: #ffffff;
-            border-bottom: 1px solid #e5e7eb;
-            z-index: 10;
-            flex-shrink: 0;
-        }
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+        body { background: #f0fdf4; overflow: hidden; width: 100%; height: 100%; }
+        .main-container { display: flex; flex-direction: column; padding: 8px 16px; gap: 8px; width: 100%; }
+       
         .option-btn {
             background: #ffffff;
             border: 1px solid #e5e7eb;
@@ -45,80 +23,57 @@
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-        .option-btn:hover {
-            border-color: #10b981;
-            color: #047857;
-        }
-        .option-btn:active {
-            transform: scale(0.98);
-        }
+        .option-btn:hover { border-color: #10b981; color: #047857; }
+        .option-btn:active { transform: scale(0.98); }
         .option-btn.selected {
             background: #10b981 !important;
             color: #ffffff !important;
             border-color: #059669 !important;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
-        /* Typebot 聊天区域占满剩余空间 */
-        .chat-container {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-        }
-        typebot-standard {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
     </style>
 
-    <!-- Typebot SDK 加载 -->
+    <!-- 加 Typebot SDK（type="module" 是必须的，新版是 ESM） -->
     <script type="module">
       import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
 
+      // 初始化（因为你是自托管，必须带 apiHost）
       Typebot.initStandard({
         typebot: "customer-service-2-5yx3lr2",
         apiHost: "https://fyncs.adamxjames.com",
-        // 可选：如果想隐藏 Typebot 的 header/title，可以打开下面这行
-        // hideHeader: true,
+        // 可选：如果想在初始化后自动 reset remembered state（测试用）
+        // onInit: () => {
+        //   Typebot.reset();  // 每次都重置，临时验证注入是否正常
+        // }
       });
     </script>
 </head>
-
 <body>
-    <div class="page-wrapper">
-        <!-- 按钮区域（固定在顶部，不会变成标题） -->
-        <div class="top-buttons">
-            <div class="main-container">
-                <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
-                <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
-            </div>
-        </div>
-
-        <!-- Typebot 聊天框占满下方空间 -->
-        <div class="chat-container">
-            <typebot-standard></typebot-standard>
-        </div>
+    <div class="main-container">
+        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
+        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
 
-    <!-- 按钮点击逻辑 -->
     <script>
         function h(btn, text) {
-            // 清除所有选中状态
+            // 清除选中状态
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            // 当前按钮选中
             btn.classList.add('selected');
-            
-            // 发送给 Typebot（保持你原有功能）
+
+            // 优先用官方 API 注入（更可靠，尤其 remember user + 重载后）
+            if (window.Typebot && typeof Typebot.setInputValue === 'function') {
+                Typebot.setInputValue(text);
+                Typebot.submitInput();
+                console.log('使用官方 API 注入：', text);
+            } else {
+                console.warn('Typebot API 未就绪，fallback 到 postMessage');
+            }
+
+            // 保留你原有 postMessage（如果 Typebot 里有自定义接收逻辑）
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text
             }, '*');
-            
-            // 如果以后想改成官方 API，可以在这里加：
-            // if (window.Typebot) {
-            //     Typebot.setInputValue(text);
-            //     Typebot.submitInput();
-            // }
         }
     </script>
 </body>
