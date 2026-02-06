@@ -45,27 +45,31 @@
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
     <script>
-        function h(btn, text) {
-            // 1. UI 样式切换
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        
-            // 2. 先注入变量（确保 n8n 能拿到 product）
-            window.parent.postMessage({
-                type: 'typebot-set-variable',
-                variable: 'Last message received',
-                value: text
-            }, '*');
-        
-            // 3. 模拟用户直接在输入框输入并点击发送
-            // 这通常会自动触发表单跳转，无需手动 jumpToBlock
+    function h(btn, text) {
+        // 1. UI 样式切换
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+
+        // 2. 注入变量 (注意：变量名如果是系统默认或带空格，建议在 Typebot 里改个简单名如 product_name)
+        // 这里尝试匹配你的 "Last message received"
+        window.parent.postMessage({
+            type: 'typebot-set-variable',
+            variable: 'Last message received',
+            value: text
+        }, '*');
+
+        // 3. 核心：唤醒并注入
+        // 先打开窗口确保 DOM 存在
+        window.parent.postMessage({ type: 'typebot-open' }, '*');
+
+        // 延迟 100ms 发送输入值，给 UI 响应变量设置的时间
+        setTimeout(() => {
             window.parent.postMessage({
                 type: 'typebot-input-value',
                 value: text
             }, '*');
-        }
-            // 在 h 函数末尾添加
-            window.parent.postMessage({ type: 'typebot-open' }, '*');
-    </script>
+        }, 100);
+    }
+</script>
 </body>
 </html>
