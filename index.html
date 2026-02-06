@@ -38,62 +38,60 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@typebot.io/js@0.3/dist/web.js"></script>
+    <script type="module">
+  import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
+
+  // 你的按钮点击函数（保持不变，但改用 Typebot API）
+  function h(btn, text) {
+    // 清除所有选中状态
+    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+    // 给自己加选中样式
+    btn.classList.add('selected');
+
+    // 使用官方 API 注入值并提交（最可靠）
+    if (window.Typebot) {
+      Typebot.setInputValue(text);
+      Typebot.submitInput();
+      console.log('已尝试注入并提交：', text);
+    } else {
+      console.warn('Typebot 尚未初始化');
+    }
+
+    // 如果你之前用 postMessage 且 Typebot 里有对应逻辑，也可以继续保留
+    window.parent.postMessage({
+      type: 'typebot-option',
+      text: text
+    }, '*');
+  }
+
+  // 初始化 Typebot
+  const isNewSession = !localStorage.getItem('typebot@customer-service-2-5yx3lr2');
+
+  Typebot.initStandard({
+    typebot: "customer-service-2-5yx3lr2",
+    // 如果你有自定义域名或自托管，把 apiHost 改成正确的地址
+    // apiHost: "https://你的typebot域名.com",
+
+    onInit: () => {
+      console.log('Typebot 初始化完成');
+      if (isNewSession) {
+        console.log('检测到新会话 → 执行 reset');
+        Typebot.reset();
+      }
+    },
+
+    // 可选：当新的输入框出现时触发（调试用）
+    onNewInputBlock: (block) => {
+      console.log('新的输入 block 出现：', block);
+    }
+  });
+</script>
 </head>
 <body>
     <div class="main-container">
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
-<script>
-    function h(btn, text) {
-        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
 
-        // 改用官方推荐的 setInputValue + submitInput（更可靠）
-        // 或者继续用 postMessage，如果你 Typebot 里确实有监听 'typebot-option'
-        if (window.Typebot) {
-            window.Typebot.setInputValue(text);
-            window.Typebot.submitInput();
-        } else {
-            // fallback：用你原来的 postMessage
-            window.parent.postMessage({
-                type: 'typebot-option',
-                text: text
-            }, '*');
-        }
-    }
-
-    // 等页面和 Typebot SDK 都加载好再初始化
-    window.addEventListener('load', () => {
-        if (!window.Typebot) {
-            console.error("Typebot SDK 未加载，请检查 script src");
-            return;
-        }
-
-        const isNewSession = !localStorage.getItem('typebot@customer-service-2-5yx3lr2'); // 用你真实的 typebot id 改 key
-
-        Typebot.initStandard({
-            typebot: "customer-service-2-5yx3lr2",
-            // 如果你是 iframe 嵌入，通常不需要 apiHost，除非自托管
-            // apiHost: "https://typebot.io", 
-            // hideHeader: true, 等其他选项按需加
-
-            onInit: () => {
-                console.log("Typebot 初始化完成");
-                if (isNewSession) {
-                    console.log("新会话 → 执行 reset");
-                    Typebot.reset();
-                }
-            },
-
-            // 可选：监听输入框出现时再尝试注入（如果 reset 后还是有问题）
-            onNewInputBlock: (inputBlock) => {
-                console.log("出现新的输入框:", inputBlock);
-                // 如果你想在这里自动填值，可以结合变量
-            }
-        });
-    });
-</script>
 </body>
 </html>
