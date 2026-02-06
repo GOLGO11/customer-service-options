@@ -46,27 +46,22 @@
     </div>
     <script>
         function h(btn, text) {
-            // 1. 清除样式并选中
+            // 1. UI 样式切换
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
         
-            // 2. 发送命令给 Typebot，强制跳转到指定的 Block
+            // 2. 先注入变量（确保 n8n 能拿到 product）
             window.parent.postMessage({
-                type: 'typebot-command',
-                command: {
-                    type: 'setVariable',
-                    variable: 'Last message received',
-                    value: text
-                }
+                type: 'typebot-set-variable',
+                variable: 'Last message received',
+                value: text
             }, '*');
         
-            // 3. 核心：强制跳转到你在 Typebot 中设定的 ID 为 "QuestionInput" 的 Block
+            // 3. 模拟用户直接在输入框输入并点击发送
+            // 这通常会自动触发表单跳转，无需手动 jumpToBlock
             window.parent.postMessage({
-                type: 'typebot-command',
-                command: {
-                    type: 'jumpToBlock',
-                    blockId: 'i3o3i1s1widv8pj81u0b2fgw' // 这里的 ID 需要你去 Typebot 节点里查
-                }
+                type: 'typebot-input-value',
+                value: text
             }, '*');
         }
     </script>
