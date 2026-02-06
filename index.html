@@ -44,43 +44,39 @@
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
-        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
-    </div>
+  <!-- 按钮 -->
+  <div class="main-container">
+    <button ... onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">...</button>
+    <button ... onclick="h(this, '澳洲肤润康10%尿素护手霜')">...</button>
+  </div>
 
-    <!-- 必须加这个容器！放在按钮下面，让聊天框显示 -->
-    <typebot-standard></typebot-standard>
+  <!-- 先定义 h 函数（普通 script，保证可用） -->
+  <script>
+    function h(btn, text) {
+      document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
 
-    <!-- SDK 加载 + 初始化 + h 函数 全部移到这里，确保 DOM ready -->
-    <script type="module">
-      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
+      // 发送 postMessage（你的监听脚本会接）
+      window.parent.postMessage({
+        type: 'typebot-option',
+        text: text
+      }, '*');
 
-      Typebot.initStandard({
-        typebot: "customer-service-2-5yx3lr2",
-        apiHost: "https://fyncs.adamxjames.com",
-      });
+      console.log('postMessage 已发送：', text);
+    }
+  </script>
 
-      // 等初始化完成后再定义 h（或直接用 window.Typebot）
-      function h(btn, text) {
-          document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
+  <!-- Typebot 容器 -->
+  <typebot-standard style="width:100%; height:70vh; display:block;"></typebot-standard>
 
-          // 优先官方方式注入
-          if (window.Typebot && window.Typebot.setInputValue) {
-              window.Typebot.setInputValue(text);
-              window.Typebot.submitInput();
-              console.log('官方注入尝试：', text);
-          } else {
-              console.warn('Typebot 未准备好');
-          }
+  <!-- SDK + init（module script，移到末尾） -->
+  <script type="module">
+    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
 
-          // 保留原有 postMessage
-          window.parent.postMessage({
-              type: 'typebot-option',
-              text: text
-          }, '*');
-      }
-    </script>
+    Typebot.initStandard({
+      typebot: "customer-service-2-5yx3lr2",
+      apiHost: "https://fyncs.adamxjames.com",
+    });
+  </script>
 </body>
 </html>
