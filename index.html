@@ -1,60 +1,81 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Typebot 自托管测试</title>
-  <style>
-    body { margin: 0; font-family: sans-serif; background: #f0fdf4; height: 100vh; overflow: hidden; }
-    .buttons { padding: 16px; display: flex; flex-direction: column; gap: 12px; background: white; z-index: 10; position: relative; }
-    button { 
-      padding: 14px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; background: #fff; cursor: pointer;
-    }
-    button:hover { background: #e6f4ea; }
-    button.selected { background: #10b981; color: white; border-color: #059669; }
-    typebot-standard { width: 100%; height: calc(100vh - 200px); display: block; } /* 留出按钮空间 */
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: #f0fdf4; overflow: hidden; width: 100%; height: 100%; }
+        .main-container { display: flex; flex-direction: column; padding: 8px 16px; gap: 8px; width: 100%; }
+        
+        .option-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            touch-action: manipulation; /* 解决移动端延迟 */
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        /* 鼠标悬停（PC端） */
+        .option-btn:hover { border-color: #10b981; color: #047857; }
+
+        /* 点击瞬间的效果 */
+        .option-btn:active { transform: scale(0.98); }
+
+        /* 选中后的状态颜色（切换效果） */
+        .option-btn.selected {
+            background: #10b981 !important; /* 切换为主题绿 */
+            color: #ffffff !important;      /* 文字变白 */
+            border-color: #059669 !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+    </style>
+    <!-- 1. 加载 Typebot JS SDK（使用 type="module"，因为新版是 ESM） -->
+    <script type="module">
+      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
+    
+      // 初始化（必须带 apiHost 指向你的自托管服务器）
+      Typebot.initStandard({
+        typebot: "customer-service-2-5yx3lr2",          // 这个 ID 来自你的自托管 dashboard，通常是 bot 的 publicId 或 slug
+        apiHost: "https://fyncs.adamxjames.com",        // 你的自托管域名（注意：结尾不要加 /api 或 /v1）
+        
+        // 可选参数，按需加（推荐加一些调试）
+        // hideHeader: true,          // 隐藏顶部栏
+        // autoScroll: true,
+        // theme: { /* 自定义主题 */ },
+      });
+    </script>
+
+<!-- 2. 放置渲染容器（必须有这个元素，SDK 会注入聊天界面） -->
+<typebot-standard style="width: 100%; height: 600px;"></typebot-standard>
 </head>
 <body>
+    <div class="main-container">
+        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
+        <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
+    </div>
+    <script>
+        function h(btn, text) {
+            // 1. 清除所有按钮的选中状态
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            
+            // 2. 为当前点击的按钮添加选中样式
+            btn.classList.add('selected');
 
-  <!-- 你的外部按钮 -->
-  <div class="buttons">
-    <button class="option-btn" onclick="sendText('澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
-    <button class="option-btn" onclick="sendText('澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
-  </div>
-
-  <!-- Typebot 容器 -->
-  <typebot-standard></typebot-standard>
-
-  <script type="module">
-    import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
-
-    // 定义发送文本的函数（注入到当前输入框并提交）
-    function sendText(text) {
-      const buttons = document.querySelectorAll('.option-btn');
-      buttons.forEach(b => b.classList.remove('selected'));
-      event.target.classList.add('selected');  // 高亮当前按钮
-
-      if (window.Typebot?.setInputValue) {
-        Typebot.setInputValue(text);
-        Typebot.submitInput();
-        console.log('已注入并提交：', text);
-      } else {
-        console.error('Typebot 未准备好，无法注入');
-      }
-    }
-
-    // 初始化（放在这里，确保容器已存在）
-    Typebot.initStandard({
-      typebot: "customer-service-2-5yx3lr2",
-      apiHost: "https://fyncs.adamxjames.com",
-      
-      // 调试用回调
-      onInit: () => console.log('Typebot 初始化完成'),
-      onNewInputBlock: (block) => console.log('新输入框出现：', block),
-      onError: (err) => console.error('Typebot 错误：', err),
-    });
-  </script>
-
+            // 3. 发送消息给 Typebot
+            window.parent.postMessage({
+                type: 'typebot-option',
+                text: text
+            }, '*');
+        }
+    </script>
 </body>
 </html>
