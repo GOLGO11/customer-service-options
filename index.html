@@ -54,13 +54,6 @@
 
     <!-- SDK 加载 + 初始化 + h 函数 全部移到这里，确保 DOM ready -->
     <script type="module">
-      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
-
-      Typebot.initStandard({
-        typebot: "customer-service-2-5yx3lr2",
-        apiHost: "https://fyncs.adamxjames.com",
-      });
-
       // 等初始化完成后再定义 h（或直接用 window.Typebot）
       function h(btn, text) {
           document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
@@ -81,6 +74,14 @@
               text: text
           }, '*');
       }
+      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
+
+      Typebot.initStandard({
+        typebot: "customer-service-2-5yx3lr2",
+        apiHost: "https://fyncs.adamxjames.com",
+      });
+
+      
     </script>
 </body>
 </html>
