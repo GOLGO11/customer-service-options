@@ -5,10 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: #f0fdf4; overflow: hidden; width: 100%; height: 100%; }
-        .main-container { display: flex; flex-direction: column; padding: 8px 16px; gap: 8px; width: 100%; }
-        
-        .option-btn {
+        body { background: #f0fdf4; overflow: hidden; width: 100%; height: 100vh; } /* 加 vh 防滚动问题 */
+        .main-container { 
+            display: flex; 
+            flex-direction: column; 
+            padding: 8px 16px; 
+            gap: 8px; 
+            width: 100%; 
+            position: absolute; /* 或 relative，根据需要 */
+            top: 0; left: 0; 
+            z-index: 10; /* 让按钮在聊天框上方 */
+        }
+       
+        .option-btn { /* 你的样式不变 */ 
             background: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 12px;
@@ -19,79 +28,80 @@
             cursor: pointer;
             text-align: left;
             width: 100%;
-            touch-action: manipulation; /* 解决移动端延迟 */
+            touch-action: manipulation;
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
-
-        /* 鼠标悬停（PC端） */
         .option-btn:hover { border-color: #10b981; color: #047857; }
-
-        /* 点击瞬间的效果 */
         .option-btn:active { transform: scale(0.98); }
-
-        /* 选中后的状态颜色（切换效果） */
         .option-btn.selected {
-            background: #10b981 !important; /* 切换为主题绿 */
-            color: #ffffff !important;      /* 文字变白 */
+            background: #10b981 !important;
+            color: #ffffff !important;
             border-color: #059669 !important;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
+
+        /* 新增：Typebot 聊天容器的样式（全屏或自定义大小） */
+        typebot-standard {
+            width: 100%;
+            height: calc(100vh - 120px); /* 留出顶部按钮空间，根据你的按钮高度调整 */
+            display: block;
+            position: relative;
+        }
     </style>
-    <script type="module">
-  import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
-
-  // 你的按钮点击函数（保持不变，但改用 Typebot API）
-  function h(btn, text) {
-    // 清除所有选中状态
-    document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-    // 给自己加选中样式
-    btn.classList.add('selected');
-
-    // 使用官方 API 注入值并提交（最可靠）
-    if (window.Typebot) {
-      Typebot.setInputValue(text);
-      Typebot.submitInput();
-      console.log('已尝试注入并提交：', text);
-    } else {
-      console.warn('Typebot 尚未初始化');
-    }
-
-    // 如果你之前用 postMessage 且 Typebot 里有对应逻辑，也可以继续保留
-    window.parent.postMessage({
-      type: 'typebot-option',
-      text: text
-    }, '*');
-  }
-
-  // 初始化 Typebot
-  const isNewSession = !localStorage.getItem('typebot@customer-service-2-5yx3lr2');
-
-  Typebot.initStandard({
-    typebot: "customer-service-2-5yx3lr2",
-    // 如果你有自定义域名或自托管，把 apiHost 改成正确的地址
-    // apiHost: "https://你的typebot域名.com",
-
-    onInit: () => {
-      console.log('Typebot 初始化完成');
-      if (isNewSession) {
-        console.log('检测到新会话 → 执行 reset');
-        Typebot.reset();
-      }
-    },
-
-    // 可选：当新的输入框出现时触发（调试用）
-    onNewInputBlock: (block) => {
-      console.log('新的输入 block 出现：', block);
-    }
-  });
-</script>
 </head>
 <body>
+
+    <!-- 你的按钮区（放在上面） -->
     <div class="main-container">
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康杜鹃花酸乳霜')">澳洲肤润康杜鹃花酸乳霜</button>
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
 
+    <!-- 关键：加这个容器！Typebot 会把聊天界面渲染在这里 -->
+    <typebot-standard style="width: 100%; height: calc(100vh - 120px);"></typebot-standard>
+
+    <!-- 脚本放在 body 末尾，确保 DOM 元素先存在 -->
+    <script type="module">
+        import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
+
+        // 定义 h 函数（现在不会因为初始化失败而丢了）
+        function h(btn, text) {
+            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+
+            if (window.Typebot) {
+                Typebot.setInputValue(text);
+                Typebot.submitInput();
+                console.log('已尝试注入并提交：', text);
+            } else {
+                console.warn('Typebot 尚未初始化');
+            }
+
+            // 保留 postMessage 如果你 Typebot 里有自定义监听
+            window.parent.postMessage({
+                type: 'typebot-option',
+                text: text
+            }, '*');
+        }
+
+        // 初始化（可以放在元素前，因为 Typebot 会等元素出现）
+        const isNewSession = !localStorage.getItem('typebot@customer-service-2-5yx3lr2');
+
+        Typebot.initStandard({
+            typebot: "customer-service-2-5yx3lr2",
+            // apiHost: 如果是自托管才需要，否则默认 https://typebot.io
+            onInit: () => {
+                console.log('Typebot 初始化完成');
+                if (isNewSession) {
+                    console.log('检测到新会话 → 执行 reset');
+                    Typebot.reset();
+                }
+            },
+            onNewInputBlock: (block) => {
+                console.log('新的输入 block 出现：', block);
+            }
+        });
+    </script>
 </body>
 </html>
