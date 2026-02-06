@@ -46,13 +46,24 @@
     </div>
     <script>
         function h(btn, text) {
-            // 1. 清除所有按钮的选中状态
+            // 1. 清除样式并选中
             document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-            
-            // 2. 为当前点击的按钮添加选中样式
             btn.classList.add('selected');
-
-            // 3. 发送消息给 Typebot
+        
+            // 2. 发送具体值给变量
+            window.parent.postMessage({
+                type: 'typebot-set-variable', // 强制先设置变量
+                variable: 'Last message received',     // 确保你在Typebot里有这个变量
+                value: text
+            }, '*');
+        
+            // 3. 核心：发送一个特定的 command 尝试“踢”一下状态机
+            window.parent.postMessage({
+                type: 'typebot-input-value', // 模拟用户输入该文本
+                value: text
+            }, '*');
+            
+            // 4. 发送原有的 option 消息
             window.parent.postMessage({
                 type: 'typebot-option',
                 text: text
