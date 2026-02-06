@@ -35,28 +35,13 @@
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
 
-        /* 给 Typebot 容器基本样式，避免完全覆盖按钮（可调高度） */
+        /* 加这个让 Typebot 有空间显示（不改布局，只防挤压） */
         typebot-standard {
             width: 100%;
-            height: 70vh;          /* 或 calc(100% - 150px)，根据按钮高度调整 */
+            height: 70vh;  /* 或 calc(100vh - 150px)，根据按钮总高调整 */
             display: block;
-            margin-top: 10px;      /* 留点间距防重叠 */
         }
     </style>
-
-    <!-- Typebot SDK 加载（放在 head 末尾或 body 开始都行） -->
-    <script type="module">
-      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
-
-      // 初始化（自托管必须带 apiHost）
-      Typebot.initStandard({
-        typebot: "customer-service-2-5yx3lr2",
-        apiHost: "https://fyncs.adamxjames.com",
-        // 可选：调试回调
-        // onInit: () => console.log('Typebot init OK'),
-        // onError: (err) => console.error('Typebot error:', err),
-      });
-    </script>
 </head>
 <body>
     <div class="main-container">
@@ -64,32 +49,38 @@
         <button type="button" class="option-btn" onclick="h(this, '澳洲肤润康10%尿素护手霜')">澳洲肤润康10%尿素护手霜</button>
     </div>
 
-    <!-- 关键：加这个容器！Typebot 会把聊天界面注入这里 -->
+    <!-- 必须加这个容器！放在按钮下面，让聊天框显示 -->
     <typebot-standard></typebot-standard>
 
-    <script>
-        function h(btn, text) {
-            // 1. 清除所有按钮的选中状态
-            document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
-           
-            // 2. 为当前点击的按钮添加选中样式
-            btn.classList.add('selected');
+    <!-- SDK 加载 + 初始化 + h 函数 全部移到这里，确保 DOM ready -->
+    <script type="module">
+      import Typebot from 'https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js';
 
-            // 优先用官方 API（在 remember user + reload 后更可靠）
-            if (window.Typebot && typeof window.Typebot.setInputValue === 'function') {
-                window.Typebot.setInputValue(text);
-                window.Typebot.submitInput();
-                console.log('使用官方 API 注入：', text);
-            } else {
-                console.warn('Typebot 未初始化，使用 fallback postMessage');
-            }
+      Typebot.initStandard({
+        typebot: "customer-service-2-5yx3lr2",
+        apiHost: "https://fyncs.adamxjames.com",
+      });
 
-            // 3. 保留原有 postMessage（自定义逻辑 fallback）
-            window.parent.postMessage({
-                type: 'typebot-option',
-                text: text
-            }, '*');
-        }
+      // 等初始化完成后再定义 h（或直接用 window.Typebot）
+      function h(btn, text) {
+          document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+
+          // 优先官方方式注入
+          if (window.Typebot && window.Typebot.setInputValue) {
+              window.Typebot.setInputValue(text);
+              window.Typebot.submitInput();
+              console.log('官方注入尝试：', text);
+          } else {
+              console.warn('Typebot 未准备好');
+          }
+
+          // 保留原有 postMessage
+          window.parent.postMessage({
+              type: 'typebot-option',
+              text: text
+          }, '*');
+      }
     </script>
 </body>
 </html>
